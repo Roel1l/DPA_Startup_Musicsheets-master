@@ -15,13 +15,15 @@ namespace DPA_Musicsheets
 
         public int octaaf { get; set; }
 
-        public double duur { get; set; }
+        public double type { get; set; }
 
         public bool rust { get; set; }
 
         public bool punt { get; set; }
 
         public string toonHoogte { get; set; }
+
+        public int absoluteTicks { get; set; }
         
         public NoteObject()
         {

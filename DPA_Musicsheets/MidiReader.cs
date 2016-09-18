@@ -64,7 +64,7 @@ namespace DPA_Musicsheets
             }
         }
 
-        private static string GetMetaString(MetaMessage metaMessage)
+        public static string GetMetaString(MetaMessage metaMessage)
         {
             byte[] bytes = metaMessage.GetBytes();
             switch (metaMessage.MetaType)

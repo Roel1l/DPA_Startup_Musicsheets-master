@@ -24,13 +24,15 @@ namespace DPA_Musicsheets
                 tracks.Add(sequence[i]);
             }
 
+            string trackName = "Error";
+            int[] timeSignature = new int[2];
+            string tempo = "Error";
+            List<Tuple<ChannelMessage, MidiEvent>> notes = new List<Tuple<ChannelMessage, MidiEvent>>();
+            int ticksPerBeat = sequence.Division;
+            int endOfTrackAbsoluteTicks = 0;
+
             foreach (Track i in tracks)
             {
-                string trackName = "Error";
-                string timeSignature = "Error";
-                string tempo = "Error";
-                List<Tuple<ChannelMessage, MidiEvent>> notes = new List<Tuple<ChannelMessage, MidiEvent>>();
-
                 #region
                 foreach (MidiEvent midiEvent in i.Iterator())
                 {
@@ -50,49 +52,29 @@ namespace DPA_Musicsheets
                         var metaMessage = midiEvent.MidiMessage as MetaMessage;
                         if (metaMessage.MetaType == MetaType.TrackName)
                         {
-                            trackName = GetMetaString(metaMessage);
+                            trackName = MidiReader.GetMetaString(metaMessage);
                         }
                         if (metaMessage.MetaType == MetaType.Tempo)
                         {
-                            tempo = GetMetaString(metaMessage);
+                            tempo = MidiReader.GetMetaString(metaMessage);
                         }
                         if (metaMessage.MetaType == MetaType.TimeSignature)
                         {
-                            timeSignature = GetMetaString(metaMessage);
+                            byte[] bytes = metaMessage.GetBytes();
+                            timeSignature[0] = bytes[0];    //kwart = 1 / 0.25 = 4                   
+                            timeSignature[1] = (int)(1 / Math.Pow(bytes[1], -2));
+                        }
+                        if(metaMessage.MetaType == MetaType.EndOfTrack)
+                        {
+                            string asdf = MidiReader.GetMetaString(metaMessage);
+                            //Vraag leraar: endoftrack zou volgens bb absoluteticks moeten hebben maar dat is niet zo
                         }
                     }
                 }
                 #endregion
-                
-                
-                trackBuilder.buildTrack(trackName, timeSignature, tempo, notes);
-           
             }
-        }
 
-        private static string GetMetaString(MetaMessage metaMessage)
-        {
-            byte[] bytes = metaMessage.GetBytes();
-            switch (metaMessage.MetaType)
-            {
-                case MetaType.Tempo:
-                    // Bitshifting is nodig om het tempo in BPM te be
-                    int tempo = (bytes[0] & 0xff) << 16 | (bytes[1] & 0xff) << 8 | (bytes[2] & 0xff);
-                    int bpm = 60000000 / tempo;
-                    return metaMessage.MetaType + ": " + bpm;
-                //case MetaType.SmpteOffset:
-                //    break;
-                case MetaType.TimeSignature:                               //kwart = 1 / 0.25 = 4
-                    return metaMessage.MetaType + ": (" + bytes[0] + " / " + 1 / Math.Pow(bytes[1], -2) + ") ";
-                //case MetaType.KeySignature:
-                //    break;
-                //case MetaType.ProprietaryEvent:
-                //    break;
-                case MetaType.TrackName:
-                    return metaMessage.MetaType + ": " + Encoding.Default.GetString(metaMessage.GetBytes());
-                default:
-                    return metaMessage.MetaType + ": " + Encoding.Default.GetString(metaMessage.GetBytes());
-            }
+            trackBuilder.buildMidiToObjectTrack(trackName, timeSignature, tempo, ticksPerBeat, notes);
         }
     }
 }

@@ -71,6 +71,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="LyToObject.cs" />
     <Compile Include="MidiToObject.cs" />
     <Compile Include="MidiTrack.cs" />
     <Page Include="MainWindow.xaml">
