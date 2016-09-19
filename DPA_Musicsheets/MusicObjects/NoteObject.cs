@@ -24,7 +24,9 @@ namespace DPA_Musicsheets
         public string toonHoogte { get; set; }
 
         public int absoluteTicks { get; set; }
-        
+
+        public bool isMaatStreep { get; set; }
+
         public NoteObject()
         {
             toonHoogtes = new List<string>();
@@ -42,9 +44,10 @@ namespace DPA_Musicsheets
             toonHoogtes.Add("B");
         }
 
-        public void setToonhoogte(int keyCode){
+        public void setToonhoogte(int keyCode)
+        {
             this.toonHoogte = toonHoogtes[keyCode];
         }
-       
+
     }
 }
